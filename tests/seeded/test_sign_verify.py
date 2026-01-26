@@ -4,6 +4,19 @@ import pytest
 from base64 import b64encode, b64decode
 import mldsa_mu
 import random
+from tests.constants import (
+    SEED_ALIAS_ECC_EDWARDS25519_SIGN_VERIFY,
+    SEED_ALIAS_ECC_NIST_P256_SIGN_VERIFY,
+    SEED_ALIAS_ECC_NIST_P384_SIGN_VERIFY,
+    SEED_ALIAS_ECC_NIST_P521_SIGN_VERIFY,
+    SEED_ALIAS_ECC_SECG_P256K1_SIGN_VERIFY,
+    SEED_ALIAS_ML_DSA_44_SIGN_VERIFY,
+    SEED_ALIAS_ML_DSA_65_SIGN_VERIFY,
+    SEED_ALIAS_ML_DSA_87_SIGN_VERIFY,
+    SEED_ALIAS_RSA_2048_SIGN_VERIFY,
+    SEED_ALIAS_RSA_3072_SIGN_VERIFY,
+    SEED_ALIAS_RSA_4096_SIGN_VERIFY,
+)
 
 # (key_spec, signing_algorithm, message_type, key_id_alias)
 SIGN_VERIFY_CASES = [
@@ -11,82 +24,82 @@ SIGN_VERIFY_CASES = [
     # RSA_* (SIGN_VERIFY)
     # RAW or DIGEST are both valid for these RSA signing algorithms.
     # -----------------
-    pytest.param("RSA_2048", "RSASSA_PSS_SHA_256", "RAW",    "alias/seed_rsa_2048_sign_verify", id="rsa2048-pss256-raw"),
-    pytest.param("RSA_2048", "RSASSA_PSS_SHA_256", "DIGEST", "alias/seed_rsa_2048_sign_verify", id="rsa2048-pss256-digest"),
-    pytest.param("RSA_2048", "RSASSA_PSS_SHA_384", "RAW",    "alias/seed_rsa_2048_sign_verify", id="rsa2048-pss384-raw"),
-    pytest.param("RSA_2048", "RSASSA_PSS_SHA_384", "DIGEST", "alias/seed_rsa_2048_sign_verify", id="rsa2048-pss384-digest"),
-    pytest.param("RSA_2048", "RSASSA_PSS_SHA_512", "RAW",    "alias/seed_rsa_2048_sign_verify", id="rsa2048-pss512-raw"),
-    pytest.param("RSA_2048", "RSASSA_PSS_SHA_512", "DIGEST", "alias/seed_rsa_2048_sign_verify", id="rsa2048-pss512-digest"),
-    pytest.param("RSA_2048", "RSASSA_PKCS1_V1_5_SHA_256", "RAW",    "alias/seed_rsa_2048_sign_verify", id="rsa2048-pkcs1v15-256-raw"),
-    pytest.param("RSA_2048", "RSASSA_PKCS1_V1_5_SHA_256", "DIGEST", "alias/seed_rsa_2048_sign_verify", id="rsa2048-pkcs1v15-256-digest"),
-    pytest.param("RSA_2048", "RSASSA_PKCS1_V1_5_SHA_384", "RAW",    "alias/seed_rsa_2048_sign_verify", id="rsa2048-pkcs1v15-384-raw"),
-    pytest.param("RSA_2048", "RSASSA_PKCS1_V1_5_SHA_384", "DIGEST", "alias/seed_rsa_2048_sign_verify", id="rsa2048-pkcs1v15-384-digest"),
-    pytest.param("RSA_2048", "RSASSA_PKCS1_V1_5_SHA_512", "RAW",    "alias/seed_rsa_2048_sign_verify", id="rsa2048-pkcs1v15-512-raw"),
-    pytest.param("RSA_2048", "RSASSA_PKCS1_V1_5_SHA_512", "DIGEST", "alias/seed_rsa_2048_sign_verify", id="rsa2048-pkcs1v15-512-digest"),
+    pytest.param("RSA_2048", "RSASSA_PSS_SHA_256", "RAW",    SEED_ALIAS_RSA_2048_SIGN_VERIFY, id="rsa2048-pss256-raw"),
+    pytest.param("RSA_2048", "RSASSA_PSS_SHA_256", "DIGEST", SEED_ALIAS_RSA_2048_SIGN_VERIFY, id="rsa2048-pss256-digest"),
+    pytest.param("RSA_2048", "RSASSA_PSS_SHA_384", "RAW",    SEED_ALIAS_RSA_2048_SIGN_VERIFY, id="rsa2048-pss384-raw"),
+    pytest.param("RSA_2048", "RSASSA_PSS_SHA_384", "DIGEST", SEED_ALIAS_RSA_2048_SIGN_VERIFY, id="rsa2048-pss384-digest"),
+    pytest.param("RSA_2048", "RSASSA_PSS_SHA_512", "RAW",    SEED_ALIAS_RSA_2048_SIGN_VERIFY, id="rsa2048-pss512-raw"),
+    pytest.param("RSA_2048", "RSASSA_PSS_SHA_512", "DIGEST", SEED_ALIAS_RSA_2048_SIGN_VERIFY, id="rsa2048-pss512-digest"),
+    pytest.param("RSA_2048", "RSASSA_PKCS1_V1_5_SHA_256", "RAW",    SEED_ALIAS_RSA_2048_SIGN_VERIFY, id="rsa2048-pkcs1v15-256-raw"),
+    pytest.param("RSA_2048", "RSASSA_PKCS1_V1_5_SHA_256", "DIGEST", SEED_ALIAS_RSA_2048_SIGN_VERIFY, id="rsa2048-pkcs1v15-256-digest"),
+    pytest.param("RSA_2048", "RSASSA_PKCS1_V1_5_SHA_384", "RAW",    SEED_ALIAS_RSA_2048_SIGN_VERIFY, id="rsa2048-pkcs1v15-384-raw"),
+    pytest.param("RSA_2048", "RSASSA_PKCS1_V1_5_SHA_384", "DIGEST", SEED_ALIAS_RSA_2048_SIGN_VERIFY, id="rsa2048-pkcs1v15-384-digest"),
+    pytest.param("RSA_2048", "RSASSA_PKCS1_V1_5_SHA_512", "RAW",    SEED_ALIAS_RSA_2048_SIGN_VERIFY, id="rsa2048-pkcs1v15-512-raw"),
+    pytest.param("RSA_2048", "RSASSA_PKCS1_V1_5_SHA_512", "DIGEST", SEED_ALIAS_RSA_2048_SIGN_VERIFY, id="rsa2048-pkcs1v15-512-digest"),
 
-    pytest.param("RSA_3072", "RSASSA_PSS_SHA_256", "RAW",    "alias/seed_rsa_3072_sign_verify", id="rsa3072-pss256-raw"),
-    pytest.param("RSA_3072", "RSASSA_PSS_SHA_256", "DIGEST", "alias/seed_rsa_3072_sign_verify", id="rsa3072-pss256-digest"),
-    pytest.param("RSA_3072", "RSASSA_PSS_SHA_384", "RAW",    "alias/seed_rsa_3072_sign_verify", id="rsa3072-pss384-raw"),
-    pytest.param("RSA_3072", "RSASSA_PSS_SHA_384", "DIGEST", "alias/seed_rsa_3072_sign_verify", id="rsa3072-pss384-digest"),
-    pytest.param("RSA_3072", "RSASSA_PSS_SHA_512", "RAW",    "alias/seed_rsa_3072_sign_verify", id="rsa3072-pss512-raw"),
-    pytest.param("RSA_3072", "RSASSA_PSS_SHA_512", "DIGEST", "alias/seed_rsa_3072_sign_verify", id="rsa3072-pss512-digest"),
-    pytest.param("RSA_3072", "RSASSA_PKCS1_V1_5_SHA_256", "RAW",    "alias/seed_rsa_3072_sign_verify", id="rsa3072-pkcs1v15-256-raw"),
-    pytest.param("RSA_3072", "RSASSA_PKCS1_V1_5_SHA_256", "DIGEST", "alias/seed_rsa_3072_sign_verify", id="rsa3072-pkcs1v15-256-digest"),
-    pytest.param("RSA_3072", "RSASSA_PKCS1_V1_5_SHA_384", "RAW",    "alias/seed_rsa_3072_sign_verify", id="rsa3072-pkcs1v15-384-raw"),
-    pytest.param("RSA_3072", "RSASSA_PKCS1_V1_5_SHA_384", "DIGEST", "alias/seed_rsa_3072_sign_verify", id="rsa3072-pkcs1v15-384-digest"),
-    pytest.param("RSA_3072", "RSASSA_PKCS1_V1_5_SHA_512", "RAW",    "alias/seed_rsa_3072_sign_verify", id="rsa3072-pkcs1v15-512-raw"),
-    pytest.param("RSA_3072", "RSASSA_PKCS1_V1_5_SHA_512", "DIGEST", "alias/seed_rsa_3072_sign_verify", id="rsa3072-pkcs1v15-512-digest"),
+    pytest.param("RSA_3072", "RSASSA_PSS_SHA_256", "RAW",    SEED_ALIAS_RSA_3072_SIGN_VERIFY, id="rsa3072-pss256-raw"),
+    pytest.param("RSA_3072", "RSASSA_PSS_SHA_256", "DIGEST", SEED_ALIAS_RSA_3072_SIGN_VERIFY, id="rsa3072-pss256-digest"),
+    pytest.param("RSA_3072", "RSASSA_PSS_SHA_384", "RAW",    SEED_ALIAS_RSA_3072_SIGN_VERIFY, id="rsa3072-pss384-raw"),
+    pytest.param("RSA_3072", "RSASSA_PSS_SHA_384", "DIGEST", SEED_ALIAS_RSA_3072_SIGN_VERIFY, id="rsa3072-pss384-digest"),
+    pytest.param("RSA_3072", "RSASSA_PSS_SHA_512", "RAW",    SEED_ALIAS_RSA_3072_SIGN_VERIFY, id="rsa3072-pss512-raw"),
+    pytest.param("RSA_3072", "RSASSA_PSS_SHA_512", "DIGEST", SEED_ALIAS_RSA_3072_SIGN_VERIFY, id="rsa3072-pss512-digest"),
+    pytest.param("RSA_3072", "RSASSA_PKCS1_V1_5_SHA_256", "RAW",    SEED_ALIAS_RSA_3072_SIGN_VERIFY, id="rsa3072-pkcs1v15-256-raw"),
+    pytest.param("RSA_3072", "RSASSA_PKCS1_V1_5_SHA_256", "DIGEST", SEED_ALIAS_RSA_3072_SIGN_VERIFY, id="rsa3072-pkcs1v15-256-digest"),
+    pytest.param("RSA_3072", "RSASSA_PKCS1_V1_5_SHA_384", "RAW",    SEED_ALIAS_RSA_3072_SIGN_VERIFY, id="rsa3072-pkcs1v15-384-raw"),
+    pytest.param("RSA_3072", "RSASSA_PKCS1_V1_5_SHA_384", "DIGEST", SEED_ALIAS_RSA_3072_SIGN_VERIFY, id="rsa3072-pkcs1v15-384-digest"),
+    pytest.param("RSA_3072", "RSASSA_PKCS1_V1_5_SHA_512", "RAW",    SEED_ALIAS_RSA_3072_SIGN_VERIFY, id="rsa3072-pkcs1v15-512-raw"),
+    pytest.param("RSA_3072", "RSASSA_PKCS1_V1_5_SHA_512", "DIGEST", SEED_ALIAS_RSA_3072_SIGN_VERIFY, id="rsa3072-pkcs1v15-512-digest"),
 
-    pytest.param("RSA_4096", "RSASSA_PSS_SHA_256", "RAW",    "alias/seed_rsa_4096_sign_verify", id="rsa4096-pss256-raw"),
-    pytest.param("RSA_4096", "RSASSA_PSS_SHA_256", "DIGEST", "alias/seed_rsa_4096_sign_verify", id="rsa4096-pss256-digest"),
-    pytest.param("RSA_4096", "RSASSA_PSS_SHA_384", "RAW",    "alias/seed_rsa_4096_sign_verify", id="rsa4096-pss384-raw"),
-    pytest.param("RSA_4096", "RSASSA_PSS_SHA_384", "DIGEST", "alias/seed_rsa_4096_sign_verify", id="rsa4096-pss384-digest"),
-    pytest.param("RSA_4096", "RSASSA_PSS_SHA_512", "RAW",    "alias/seed_rsa_4096_sign_verify", id="rsa4096-pss512-raw"),
-    pytest.param("RSA_4096", "RSASSA_PSS_SHA_512", "DIGEST", "alias/seed_rsa_4096_sign_verify", id="rsa4096-pss512-digest"),
-    pytest.param("RSA_4096", "RSASSA_PKCS1_V1_5_SHA_256", "RAW",    "alias/seed_rsa_4096_sign_verify", id="rsa4096-pkcs1v15-256-raw"),
-    pytest.param("RSA_4096", "RSASSA_PKCS1_V1_5_SHA_256", "DIGEST", "alias/seed_rsa_4096_sign_verify", id="rsa4096-pkcs1v15-256-digest"),
-    pytest.param("RSA_4096", "RSASSA_PKCS1_V1_5_SHA_384", "RAW",    "alias/seed_rsa_4096_sign_verify", id="rsa4096-pkcs1v15-384-raw"),
-    pytest.param("RSA_4096", "RSASSA_PKCS1_V1_5_SHA_384", "DIGEST", "alias/seed_rsa_4096_sign_verify", id="rsa4096-pkcs1v15-384-digest"),
-    pytest.param("RSA_4096", "RSASSA_PKCS1_V1_5_SHA_512", "RAW",    "alias/seed_rsa_4096_sign_verify", id="rsa4096-pkcs1v15-512-raw"),
-    pytest.param("RSA_4096", "RSASSA_PKCS1_V1_5_SHA_512", "DIGEST", "alias/seed_rsa_4096_sign_verify", id="rsa4096-pkcs1v15-512-digest"),
+    pytest.param("RSA_4096", "RSASSA_PSS_SHA_256", "RAW",    SEED_ALIAS_RSA_4096_SIGN_VERIFY, id="rsa4096-pss256-raw"),
+    pytest.param("RSA_4096", "RSASSA_PSS_SHA_256", "DIGEST", SEED_ALIAS_RSA_4096_SIGN_VERIFY, id="rsa4096-pss256-digest"),
+    pytest.param("RSA_4096", "RSASSA_PSS_SHA_384", "RAW",    SEED_ALIAS_RSA_4096_SIGN_VERIFY, id="rsa4096-pss384-raw"),
+    pytest.param("RSA_4096", "RSASSA_PSS_SHA_384", "DIGEST", SEED_ALIAS_RSA_4096_SIGN_VERIFY, id="rsa4096-pss384-digest"),
+    pytest.param("RSA_4096", "RSASSA_PSS_SHA_512", "RAW",    SEED_ALIAS_RSA_4096_SIGN_VERIFY, id="rsa4096-pss512-raw"),
+    pytest.param("RSA_4096", "RSASSA_PSS_SHA_512", "DIGEST", SEED_ALIAS_RSA_4096_SIGN_VERIFY, id="rsa4096-pss512-digest"),
+    pytest.param("RSA_4096", "RSASSA_PKCS1_V1_5_SHA_256", "RAW",    SEED_ALIAS_RSA_4096_SIGN_VERIFY, id="rsa4096-pkcs1v15-256-raw"),
+    pytest.param("RSA_4096", "RSASSA_PKCS1_V1_5_SHA_256", "DIGEST", SEED_ALIAS_RSA_4096_SIGN_VERIFY, id="rsa4096-pkcs1v15-256-digest"),
+    pytest.param("RSA_4096", "RSASSA_PKCS1_V1_5_SHA_384", "RAW",    SEED_ALIAS_RSA_4096_SIGN_VERIFY, id="rsa4096-pkcs1v15-384-raw"),
+    pytest.param("RSA_4096", "RSASSA_PKCS1_V1_5_SHA_384", "DIGEST", SEED_ALIAS_RSA_4096_SIGN_VERIFY, id="rsa4096-pkcs1v15-384-digest"),
+    pytest.param("RSA_4096", "RSASSA_PKCS1_V1_5_SHA_512", "RAW",    SEED_ALIAS_RSA_4096_SIGN_VERIFY, id="rsa4096-pkcs1v15-512-raw"),
+    pytest.param("RSA_4096", "RSASSA_PKCS1_V1_5_SHA_512", "DIGEST", SEED_ALIAS_RSA_4096_SIGN_VERIFY, id="rsa4096-pkcs1v15-512-digest"),
 
     # -----------------
     # ECDSA (SIGN_VERIFY)
     # ECDSA_SHA_256 applies to P-256 and secp256k1; 384->P-384; 512->P-521.
     # RAW or DIGEST valid.
     # -----------------
-    pytest.param("ECC_NIST_P256", "ECDSA_SHA_256", "RAW",    "alias/seed_ecc_nist_p256_sign_verify", id="p256-ecdsa256-raw"),
-    pytest.param("ECC_NIST_P256", "ECDSA_SHA_256", "DIGEST", "alias/seed_ecc_nist_p256_sign_verify", id="p256-ecdsa256-digest"),
+    pytest.param("ECC_NIST_P256", "ECDSA_SHA_256", "RAW",    SEED_ALIAS_ECC_NIST_P256_SIGN_VERIFY, id="p256-ecdsa256-raw"),
+    pytest.param("ECC_NIST_P256", "ECDSA_SHA_256", "DIGEST", SEED_ALIAS_ECC_NIST_P256_SIGN_VERIFY, id="p256-ecdsa256-digest"),
 
-    pytest.param("ECC_NIST_P384", "ECDSA_SHA_384", "RAW",    "alias/seed_ecc_nist_p384_sign_verify", id="p384-ecdsa384-raw"),
-    pytest.param("ECC_NIST_P384", "ECDSA_SHA_384", "DIGEST", "alias/seed_ecc_nist_p384_sign_verify", id="p384-ecdsa384-digest"),
+    pytest.param("ECC_NIST_P384", "ECDSA_SHA_384", "RAW",    SEED_ALIAS_ECC_NIST_P384_SIGN_VERIFY, id="p384-ecdsa384-raw"),
+    pytest.param("ECC_NIST_P384", "ECDSA_SHA_384", "DIGEST", SEED_ALIAS_ECC_NIST_P384_SIGN_VERIFY, id="p384-ecdsa384-digest"),
 
-    pytest.param("ECC_NIST_P521", "ECDSA_SHA_512", "RAW",    "alias/seed_ecc_nist_p521_sign_verify", id="p521-ecdsa512-raw"),
-    pytest.param("ECC_NIST_P521", "ECDSA_SHA_512", "DIGEST", "alias/seed_ecc_nist_p521_sign_verify", id="p521-ecdsa512-digest"),
+    pytest.param("ECC_NIST_P521", "ECDSA_SHA_512", "RAW",    SEED_ALIAS_ECC_NIST_P521_SIGN_VERIFY, id="p521-ecdsa512-raw"),
+    pytest.param("ECC_NIST_P521", "ECDSA_SHA_512", "DIGEST", SEED_ALIAS_ECC_NIST_P521_SIGN_VERIFY, id="p521-ecdsa512-digest"),
 
-    pytest.param("ECC_SECG_P256K1", "ECDSA_SHA_256", "RAW",    "alias/seed_ecc_secg_p256k1_sign_verify", id="secp256k1-ecdsa256-raw"),
-    pytest.param("ECC_SECG_P256K1", "ECDSA_SHA_256", "DIGEST", "alias/seed_ecc_secg_p256k1_sign_verify", id="secp256k1-ecdsa256-digest"),
+    pytest.param("ECC_SECG_P256K1", "ECDSA_SHA_256", "RAW",    SEED_ALIAS_ECC_SECG_P256K1_SIGN_VERIFY, id="secp256k1-ecdsa256-raw"),
+    pytest.param("ECC_SECG_P256K1", "ECDSA_SHA_256", "DIGEST", SEED_ALIAS_ECC_SECG_P256K1_SIGN_VERIFY, id="secp256k1-ecdsa256-digest"),
 
     # -----------------
     # Ed25519 (SIGN_VERIFY)
     # ED25519_SHA_512 => RAW only
     # ED25519_PH_SHA_512 => DIGEST only
     # -----------------
-    pytest.param("ECC_NIST_EDWARDS25519", "ED25519_SHA_512",    "RAW",    "alias/seed_ecc_nist_edwards25519_sign_verify", id="ed25519-sha512-raw"),
-    pytest.param("ECC_NIST_EDWARDS25519", "ED25519_PH_SHA_512", "DIGEST", "alias/seed_ecc_nist_edwards25519_sign_verify", id="ed25519-phsha512-digest"),
+    pytest.param("ECC_NIST_EDWARDS25519", "ED25519_SHA_512",    "RAW",    SEED_ALIAS_ECC_EDWARDS25519_SIGN_VERIFY, id="ed25519-sha512-raw"),
+    pytest.param("ECC_NIST_EDWARDS25519", "ED25519_PH_SHA_512", "DIGEST", SEED_ALIAS_ECC_EDWARDS25519_SIGN_VERIFY, id="ed25519-phsha512-digest"),
 
     # -----------------
     # ML-DSA (SIGN_VERIFY)
     # RAW or EXTERNAL_MU valid for the ML-DSA algorithm
     # -----------------
-    pytest.param("ML_DSA_44", "ML_DSA_SHAKE_256", "RAW",         "alias/seed_ml_dsa_44_sign_verify", id="mldsa44-raw"),
-    pytest.param("ML_DSA_44", "ML_DSA_SHAKE_256", "EXTERNAL_MU", "alias/seed_ml_dsa_44_sign_verify", id="mldsa44-external-mu"),
+    pytest.param("ML_DSA_44", "ML_DSA_SHAKE_256", "RAW",         SEED_ALIAS_ML_DSA_44_SIGN_VERIFY, id="mldsa44-raw"),
+    pytest.param("ML_DSA_44", "ML_DSA_SHAKE_256", "EXTERNAL_MU", SEED_ALIAS_ML_DSA_44_SIGN_VERIFY, id="mldsa44-external-mu"),
 
-    pytest.param("ML_DSA_65", "ML_DSA_SHAKE_256", "RAW",         "alias/seed_ml_dsa_65_sign_verify", id="mldsa65-raw"),
-    pytest.param("ML_DSA_65", "ML_DSA_SHAKE_256", "EXTERNAL_MU", "alias/seed_ml_dsa_65_sign_verify", id="mldsa65-external-mu"),
+    pytest.param("ML_DSA_65", "ML_DSA_SHAKE_256", "RAW",         SEED_ALIAS_ML_DSA_65_SIGN_VERIFY, id="mldsa65-raw"),
+    pytest.param("ML_DSA_65", "ML_DSA_SHAKE_256", "EXTERNAL_MU", SEED_ALIAS_ML_DSA_65_SIGN_VERIFY, id="mldsa65-external-mu"),
 
-    pytest.param("ML_DSA_87", "ML_DSA_SHAKE_256", "RAW",         "alias/seed_ml_dsa_87_sign_verify", id="mldsa87-raw"),
-    pytest.param("ML_DSA_87", "ML_DSA_SHAKE_256", "EXTERNAL_MU", "alias/seed_ml_dsa_87_sign_verify", id="mldsa87-external-mu"),
+    pytest.param("ML_DSA_87", "ML_DSA_SHAKE_256", "RAW",         SEED_ALIAS_ML_DSA_87_SIGN_VERIFY, id="mldsa87-raw"),
+    pytest.param("ML_DSA_87", "ML_DSA_SHAKE_256", "EXTERNAL_MU", SEED_ALIAS_ML_DSA_87_SIGN_VERIFY, id="mldsa87-external-mu"),
 ]
 
 

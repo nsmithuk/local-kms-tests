@@ -1,5 +1,5 @@
 import pytest
-from tests.generic import ALLOWED_KEY_USAGE_BY_SPEC
+from tests.constants import ALLOWED_KEY_USAGE_BY_SPEC
 # Reuse your ALLOWED_KEY_USAGE_BY_SPEC from above
 
 ALL_VALID_KEY_USAGE_ENUMS = {

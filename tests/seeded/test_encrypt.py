@@ -7,17 +7,23 @@ import random
 from cryptography.hazmat.primitives import serialization, hashes
 from cryptography.hazmat.primitives.asymmetric import ec
 from cryptography.hazmat.primitives.kdf.hkdf import HKDF
+from tests.constants import (
+    SEED_ALIAS_RSA_2048_ENCRYPT_DECRYPT,
+    SEED_ALIAS_RSA_3072_ENCRYPT_DECRYPT,
+    SEED_ALIAS_RSA_4096_ENCRYPT_DECRYPT,
+    SEED_ALIAS_SYMMETRIC_ENCRYPT_DECRYPT,
+)
 
 ENCRYPT_CASES = [
-    pytest.param("SYMMETRIC_DEFAULT", "SYMMETRIC_DEFAULT", "alias/seed_symmetric_default_encrypt_decrypt", id="symmetric_default"),
+    pytest.param("SYMMETRIC_DEFAULT", "SYMMETRIC_DEFAULT", SEED_ALIAS_SYMMETRIC_ENCRYPT_DECRYPT, id="symmetric_default"),
 
-    pytest.param("RSA_2048", "RSAES_OAEP_SHA_1", "alias/seed_rsa_2048_encrypt_decrypt", id="rsa_2048_sha1"),
-    pytest.param("RSA_3072", "RSAES_OAEP_SHA_1", "alias/seed_rsa_3072_encrypt_decrypt", id="rsa_3072_sha1"),
-    pytest.param("RSA_4096", "RSAES_OAEP_SHA_1", "alias/seed_rsa_4096_encrypt_decrypt", id="rsa_4096_sha1"),
+    pytest.param("RSA_2048", "RSAES_OAEP_SHA_1", SEED_ALIAS_RSA_2048_ENCRYPT_DECRYPT, id="rsa_2048_sha1"),
+    pytest.param("RSA_3072", "RSAES_OAEP_SHA_1", SEED_ALIAS_RSA_3072_ENCRYPT_DECRYPT, id="rsa_3072_sha1"),
+    pytest.param("RSA_4096", "RSAES_OAEP_SHA_1", SEED_ALIAS_RSA_4096_ENCRYPT_DECRYPT, id="rsa_4096_sha1"),
 
-    pytest.param("RSA_2048", "RSAES_OAEP_SHA_256", "alias/seed_rsa_2048_encrypt_decrypt", id="rsa_2048_sha2"),
-    pytest.param("RSA_3072", "RSAES_OAEP_SHA_256", "alias/seed_rsa_3072_encrypt_decrypt", id="rsa_3072_sha2"),
-    pytest.param("RSA_4096", "RSAES_OAEP_SHA_256", "alias/seed_rsa_4096_encrypt_decrypt", id="rsa_4096_sha2"),
+    pytest.param("RSA_2048", "RSAES_OAEP_SHA_256", SEED_ALIAS_RSA_2048_ENCRYPT_DECRYPT, id="rsa_2048_sha2"),
+    pytest.param("RSA_3072", "RSAES_OAEP_SHA_256", SEED_ALIAS_RSA_3072_ENCRYPT_DECRYPT, id="rsa_3072_sha2"),
+    pytest.param("RSA_4096", "RSAES_OAEP_SHA_256", SEED_ALIAS_RSA_4096_ENCRYPT_DECRYPT, id="rsa_4096_sha2"),
 ]
 
 
@@ -62,7 +68,7 @@ def test_encrypt_decrypt(
     # Test ReEncryption
 
     # TO keep it simple, we reencrypt everything to this AES key.
-    re_encrypt_key_id = "alias/seed_symmetric_default_encrypt_decrypt"
+    re_encrypt_key_id = SEED_ALIAS_SYMMETRIC_ENCRYPT_DECRYPT
 
     code, content = kms_client.post('ReEncrypt',{
         'CiphertextBlob': cipher_text_blob,

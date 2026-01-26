@@ -4,12 +4,18 @@ import pytest
 from base64 import b64encode, b64decode
 import mldsa_mu
 import random
+from tests.constants import (
+    SEED_ALIAS_HMAC_224,
+    SEED_ALIAS_HMAC_256,
+    SEED_ALIAS_HMAC_384,
+    SEED_ALIAS_HMAC_512,
+)
 
 HMAC_CASES = [
-    pytest.param("HMAC_224", "HMAC_SHA_224", "alias/seed_hmac_224_generate_verify_mac", id="hmac_224"),
-    pytest.param("HMAC_256", "HMAC_SHA_256", "alias/seed_hmac_256_generate_verify_mac", id="hmac_256"),
-    pytest.param("HMAC_384", "HMAC_SHA_384", "alias/seed_hmac_384_generate_verify_mac", id="hmac_384"),
-    pytest.param("HMAC_512", "HMAC_SHA_512", "alias/seed_hmac_512_generate_verify_mac", id="hmac_512"),
+    pytest.param("HMAC_224", "HMAC_SHA_224", SEED_ALIAS_HMAC_224, id="hmac_224"),
+    pytest.param("HMAC_256", "HMAC_SHA_256", SEED_ALIAS_HMAC_256, id="hmac_256"),
+    pytest.param("HMAC_384", "HMAC_SHA_384", SEED_ALIAS_HMAC_384, id="hmac_384"),
+    pytest.param("HMAC_512", "HMAC_SHA_512", SEED_ALIAS_HMAC_512, id="hmac_512"),
 ]
 
 @pytest.mark.parametrize("key_spec,mac_algorithm,key_id", HMAC_CASES)

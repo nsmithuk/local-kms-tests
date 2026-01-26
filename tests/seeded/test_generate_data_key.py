@@ -4,6 +4,7 @@ import pytest
 from base64 import b64encode, b64decode
 import mldsa_mu
 import random
+from tests.constants import SEED_ALIAS_SYMMETRIC_ENCRYPT_DECRYPT
 
 DATA_KEY_CASES = [
     pytest.param("AES_128", id="aes_128"),
@@ -16,7 +17,7 @@ def test_generate_data_key_spec(
     data_key_spec: str,
 ) -> None:
 
-    key_id = "alias/seed_symmetric_default_encrypt_decrypt"
+    key_id = SEED_ALIAS_SYMMETRIC_ENCRYPT_DECRYPT
 
     code, content = kms_client.post('GenerateDataKey',{
         'KeyId': key_id,
@@ -72,7 +73,7 @@ def test_generate_data_key_bytes(
     kms_client,
 ) -> None:
 
-    key_id = "alias/seed_symmetric_default_encrypt_decrypt"
+    key_id = SEED_ALIAS_SYMMETRIC_ENCRYPT_DECRYPT
 
     code, content = kms_client.post('GenerateDataKey',{
         'KeyId': key_id,
