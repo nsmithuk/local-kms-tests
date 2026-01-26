@@ -1,7 +1,7 @@
 import re
 import pytest
 import uuid
-from . import ALLOWED_KEY_USAGE_BY_SPEC
+from tests.generic import ALLOWED_KEY_USAGE_BY_SPEC
 
 VALID_CREATE_KEY_CASES = [
     pytest.param(
@@ -226,8 +226,8 @@ def _assert_schedule_key_deletion_response(
 
 @pytest.mark.parametrize("key_spec,key_usage", VALID_CREATE_KEY_CASES)
 def test_create_key_valid_combinations(kms_client, key_spec, key_usage):
-    if key_spec != "ML_DSA_44":
-        pytest.skip("Temporarily only testing ML_DSA_44 keys")
+    # if key_spec != "ML_DSA_44":
+    #     pytest.skip("Temporarily only testing ML_DSA_44 keys")
 
     print(f"Creating key with spec {key_spec} and usage {key_usage}")
 
