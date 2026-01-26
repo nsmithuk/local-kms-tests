@@ -31,6 +31,9 @@ class KmsClient:
                                         aws_region=region,
                                         aws_service='kms')
 
+    def is_real_kms(self) -> bool:
+        return self.real_kms
+
     def post(self, handler, payload=None):
 
         # If we're using real KMS we need to Throttle requests.

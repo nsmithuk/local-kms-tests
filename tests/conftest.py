@@ -12,7 +12,7 @@ def kms_client():
         aws_secret_access_key=os.getenv('AWS_SECRET_ACCESS_KEY', 'Test'),
         aws_session_token=os.getenv('AWS_SESSION_TOKEN', 'Test'),
         kms_url=os.getenv('KMS_URL', 'http://localhost:8080'),
-        real_kms=True,
+        real_kms=False,
     )
 
 
