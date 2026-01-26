@@ -1,4 +1,2 @@
 
-ASYMMETRIC_KEY_ALIASES = [
-    "alias/seed_ecc_nist_p256_sign_verify",
-]
+from tests.constants import ASYMMETRIC_KEY_ALIASES
