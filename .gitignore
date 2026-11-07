@@ -1,1 +1,10 @@
 /.idea
+__pycache__
+/envvar
+.venv/
+.pytest_cache/
+*.pyc
+*.pyo
+*.pyd
+.env
+.env.*

@@ -1,0 +1,7 @@
+pytest
+requests
+aws-requests-auth
+pyasn1
+pyasn1-modules
+mldsa-mu
+cryptography
