@@ -119,6 +119,8 @@ def test_get_key_policy(kms_client) -> None:
 
 
 def test_put_key_policy(kms_client) -> None:
+    import json
+
     key_id = _create_key(kms_client)
 
     new_policy = '{"Version":"2012-10-17","Statement":[{"Sid":"test","Effect":"Allow","Principal":"*","Action":"kms:*","Resource":"*"}]}'
@@ -138,7 +140,8 @@ def test_put_key_policy(kms_client) -> None:
         {"KeyId": key_id, "PolicyName": "default"},
     )
     assert code == 200
-    assert content["Policy"] == new_policy
+    # AWS KMS may reformat/pretty-print the stored policy, so compare parsed JSON
+    assert json.loads(content["Policy"]) == json.loads(new_policy)
 
 
 def test_list_key_policies(kms_client) -> None:

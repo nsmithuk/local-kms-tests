@@ -176,6 +176,8 @@ def test_local_kms_sign_then_verify(
     # Negative Test Verify
 
     # We "break" the signature so it should fail verification.
+    # Real AWS KMS raises KMSInvalidSignatureException (HTTP 400) for an invalid
+    # signature rather than returning SignatureValid: false.
 
     signature_bytes = bytearray(b64decode(signature))
     signature_bytes[0] ^= 0x01  # flip the lowest bit of the first byte
@@ -189,7 +191,6 @@ def test_local_kms_sign_then_verify(
         'Message': b64encode(message).decode('ascii')
     })
 
-    assert code == 200
+    assert code == 400
     assert isinstance(content, dict)
-    assert content.get('SignatureValid', True) is False
-    assert content.get('SigningAlgorithm') == signing_algorithm
+    assert content.get('__type') == 'KMSInvalidSignatureException'

@@ -72,7 +72,9 @@ def test_local_kms_sign_then_verify(
     # ---------------------------------------------------
     # Negative Test Verify
 
-    # We "break" the signature so it should fail verification.
+    # We "break" the MAC so it should fail verification.
+    # Real AWS KMS raises KMSInvalidMacException (HTTP 400) for an invalid MAC
+    # rather than returning MacValid: false.
     mac_bytes = bytearray(mac)
     mac_bytes[0] ^= 0x01  # flip the lowest bit of the first byte
     broken_mac = b64encode(mac_bytes).decode('ascii')
@@ -84,7 +86,6 @@ def test_local_kms_sign_then_verify(
         'Mac': broken_mac
     })
 
-    assert code == 200
+    assert code == 400
     assert isinstance(content, dict)
-    assert content.get('MacValid', True) is False
-    assert content.get('MacAlgorithm') == mac_algorithm
+    assert content.get('__type') == 'KMSInvalidMacException'

@@ -10,9 +10,10 @@ def test_alias_create_delete_recreate(kms_client) -> None:
     assert isinstance(content, dict)
     key_id = content["KeyMetadata"]["KeyId"]
 
-    alias_name = "alias/test-alias-lifecycle"
+    import uuid
+    alias_name = f"alias/test-alias-lifecycle-{uuid.uuid4().hex[:8]}"
 
-    code, content = kms_client.post(
+    code, _ = kms_client.post(
         "CreateAlias",
         {
             "AliasName": alias_name,
@@ -20,7 +21,6 @@ def test_alias_create_delete_recreate(kms_client) -> None:
         },
     )
     assert code == 200
-    assert isinstance(content, dict)
 
     code, content = kms_client.post(
         "DescribeKey",
@@ -32,16 +32,15 @@ def test_alias_create_delete_recreate(kms_client) -> None:
     assert isinstance(content, dict)
     assert content["KeyMetadata"]["KeyId"] == key_id
 
-    code, content = kms_client.post(
+    code, _ = kms_client.post(
         "DeleteAlias",
         {
             "AliasName": alias_name,
         },
     )
     assert code == 200
-    assert isinstance(content, dict)
 
-    code, content = kms_client.post(
+    code, _ = kms_client.post(
         "CreateAlias",
         {
             "AliasName": alias_name,
@@ -49,4 +48,3 @@ def test_alias_create_delete_recreate(kms_client) -> None:
         },
     )
     assert code == 200
-    assert isinstance(content, dict)

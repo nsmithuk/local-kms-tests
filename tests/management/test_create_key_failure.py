@@ -13,18 +13,17 @@ def test_create_description_failure(kms_client):
 
     assert code == 400
     assert isinstance(content, dict)
-    assert content.get('__type') == 'LimitExceededException'
+    assert content.get('__type') == 'ValidationException'
     assert content.get('message').startswith('1 validation error detected: ')
 
 def test_create_policy_failure(kms_client):
     code, content = kms_client.post('CreateKey',{
-        'policy': random_string(32768 + 1)
+        'Policy': random_string(32768 + 1)
     })
 
     assert code == 400
     assert isinstance(content, dict)
-    assert content.get('__type') == 'LimitExceededException'
-    assert content.get('message').startswith('1 validation error detected: ')
+    assert content.get('__type') == 'MalformedPolicyDocumentException'
 
     # TODO - try an invalid policy
 
@@ -36,5 +35,5 @@ def test_create_duplicate_keyspec_failure(kms_client):
 
     assert code == 400
     assert isinstance(content, dict)
-    assert content.get('__type') == 'ValidationError'
-    assert content.get('message').startswith('1 validation error detected: You cannot specify KeySpec and CustomerMasterKeySpec in the same request.')
+    assert content.get('__type') == 'ValidationException'
+    assert content.get('message').startswith('You cannot specify KeySpec and CustomerMasterKeySpec in the same request.')

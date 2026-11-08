@@ -24,7 +24,7 @@ def test_cancel_key_deletion_restores_key(kms_client) -> None:
     code, content = kms_client.post("DescribeKey", {"KeyId": key_id})
     assert code == 200
     md = content["KeyMetadata"]
-    assert md["KeyState"] != "PendingDeletion"
+    assert md["KeyState"] == "Disabled"
 
     code, _ = kms_client.post("EnableKey", {"KeyId": key_id})
     assert code == 200

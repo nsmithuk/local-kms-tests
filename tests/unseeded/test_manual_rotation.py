@@ -103,7 +103,7 @@ def _import_key_material(
     assert isinstance(content, dict)
 
 
-def test_rotate_key_on_demand_hits_limit_10(kms_client) -> None:
+def test_rotate_key_on_demand_hits_limit_25(kms_client) -> None:
     # Create a normal KMS key
     code, content = kms_client.post(
         "CreateKey",
@@ -121,22 +121,21 @@ def test_rotate_key_on_demand_hits_limit_10(kms_client) -> None:
     md0 = _describe_key(kms_client, key_id)
     initial_material_id = md0.get("CurrentKeyMaterialId")
 
-    # You can manually rotate at most 10 times. First 10 succeed.
+    # AWS allows up to 25 on-demand rotations per key; all 25 must succeed.
     last_material_id = initial_material_id
-    for i in range(10):
+    for i in range(25):
         if kms_client.is_real_kms():
-            # KMS is quite slow rotating keys, so we need to move slowly.
             time.sleep(65)
 
         code, resp = kms_client.post("RotateKeyOnDemand", {"KeyId": key_id})
-        assert code == 200
+        assert code == 200, f"rotation {i + 1} failed: {resp}"
         assert isinstance(resp, dict)
 
         new_id_seen = False
         new_material_id = None
-        for j in range(10):
+        for j in range(25):
             if kms_client.is_real_kms():
-                time.sleep(3)
+                time.sleep(5)
 
             rotations = _list_key_rotations(kms_client, key_id)
             new_material_id = _current_material_id_from_rotations(rotations)
@@ -147,15 +146,16 @@ def test_rotate_key_on_demand_hits_limit_10(kms_client) -> None:
             if new_id_seen:
                 break
 
-        assert new_id_seen is True
+        assert new_id_seen is True, f"rotation {i + 1} not reflected in ListKeyRotations"
         last_material_id = new_material_id
 
-    # 11th rotation should fail
+    # 26th rotation must fail with LimitExceededException.
+    if kms_client.is_real_kms():
+        time.sleep(65)
     code, resp = kms_client.post("RotateKeyOnDemand", {"KeyId": key_id})
     assert code != 200
     assert isinstance(resp, dict)
-    assert resp.get("__type") is not None
-    assert resp["__type"] == "LimitExceededException"
+    assert resp.get("__type") == "LimitExceededException"
 
 
 def test_external_import_two_materials_second_not_current_until_rotate(kms_client) -> None:
