@@ -200,8 +200,7 @@ def _import_key_material(
     if key_material_id is not None:
         payload["KeyMaterialId"] = key_material_id
 
-    if expiration_model == "KEY_MATERIAL_EXPIRES":
-        assert valid_to_epoch_seconds is not None
+    if valid_to_epoch_seconds is not None:
         payload["ValidTo"] = valid_to_epoch_seconds  # raw HTTP JSON: epoch seconds (number)
 
     code, content = kms_client.post("ImportKeyMaterial", payload)
@@ -685,3 +684,118 @@ def test_import_key_material_reimport_semantics(
         )
     else:
         raise ValueError(key_usage)
+
+
+# --------------------------------------------------------------------------------------
+# ValidTo / expiry tests
+# --------------------------------------------------------------------------------------
+
+
+def _do_symmetric_import(kms_client, *, key_id: str, expiration_model: str, valid_to_epoch_seconds: int | None = None) -> tuple[int, dict]:
+    """Import a fresh random 32-byte symmetric key."""
+    import_token_b64, wrapping_pubkey_der = _get_import_params(
+        kms_client,
+        key_id=key_id,
+        wrapping_key_spec="RSA_3072",
+        wrapping_algorithm="RSAES_OAEP_SHA_256",
+    )
+    plaintext = os.urandom(32)
+    encrypted = _wrap_key_material(
+        wrapping_pubkey_der=wrapping_pubkey_der,
+        wrapping_algorithm="RSAES_OAEP_SHA_256",
+        plaintext_key_material=plaintext,
+    )
+    return _import_key_material(
+        kms_client,
+        key_id=key_id,
+        import_token_b64=import_token_b64,
+        encrypted_key_material=encrypted,
+        expiration_model=expiration_model,
+        valid_to_epoch_seconds=valid_to_epoch_seconds,
+        import_type="NEW_KEY_MATERIAL",
+    )
+
+
+def test_import_expiry_validation(kms_client) -> None:
+    """ValidTo validation rules on ImportKeyMaterial."""
+    key_id = _create_external_key(kms_client, key_spec="SYMMETRIC_DEFAULT", key_usage="ENCRYPT_DECRYPT")
+
+    now_s = int(time.time())
+
+    # KEY_MATERIAL_EXPIRES requires ValidTo
+    code, content = _do_symmetric_import(kms_client, key_id=key_id, expiration_model="KEY_MATERIAL_EXPIRES")
+    assert code == 400, content
+    assert "validTo" in content.get("message", "")
+
+    # KEY_MATERIAL_EXPIRES with ValidTo in the past is rejected
+    code, content = _do_symmetric_import(
+        kms_client,
+        key_id=key_id,
+        expiration_model="KEY_MATERIAL_EXPIRES",
+        valid_to_epoch_seconds=now_s - 60,
+    )
+    assert code == 400, content
+
+    # KEY_MATERIAL_DOES_NOT_EXPIRE with ValidTo provided is rejected
+    import_token_b64, wrapping_pubkey_der = _get_import_params(
+        kms_client,
+        key_id=key_id,
+        wrapping_key_spec="RSA_3072",
+        wrapping_algorithm="RSAES_OAEP_SHA_256",
+    )
+    encrypted = _wrap_key_material(
+        wrapping_pubkey_der=wrapping_pubkey_der,
+        wrapping_algorithm="RSAES_OAEP_SHA_256",
+        plaintext_key_material=os.urandom(32),
+    )
+    code, content = kms_client.post("ImportKeyMaterial", {
+        "KeyId": key_id,
+        "ImportToken": import_token_b64,
+        "EncryptedKeyMaterial": b64encode(encrypted).decode("ascii"),
+        "ExpirationModel": "KEY_MATERIAL_DOES_NOT_EXPIRE",
+        "ValidTo": now_s + 3600,
+    })
+    assert code == 400, content
+    assert "validTo" in content.get("message", "")
+
+
+def test_import_key_material_expiry(kms_client) -> None:
+    """Key material expires at ValidTo: key transitions to PendingImport and rejects crypto ops."""
+    if kms_client.is_real_kms():
+        pytest.skip("Expiry timing test not run against real KMS")
+
+    key_id = _create_external_key(kms_client, key_spec="SYMMETRIC_DEFAULT", key_usage="ENCRYPT_DECRYPT")
+
+    now_s = int(time.time())
+    valid_to_s = now_s + 2  # expires in 2 seconds
+
+    code, _ = _do_symmetric_import(
+        kms_client,
+        key_id=key_id,
+        expiration_model="KEY_MATERIAL_EXPIRES",
+        valid_to_epoch_seconds=valid_to_s,
+    )
+    assert code == 200
+
+    # Key should work immediately
+    code, content = kms_client.post("Encrypt", {
+        "KeyId": key_id,
+        "Plaintext": b64encode(b"test").decode("ascii"),
+    })
+    assert code == 200, f"expected key to work before expiry: {content}"
+
+    # Wait for material to expire
+    time.sleep(3)
+
+    # Key should now be in PendingImport state
+    code, content = kms_client.post("Encrypt", {
+        "KeyId": key_id,
+        "Plaintext": b64encode(b"test").decode("ascii"),
+    })
+    assert code == 400, f"expected key to be expired: {content}"
+    assert content.get("__type") == "KMSInvalidStateException"
+
+    # DescribeKey should show PendingImport
+    code, content = kms_client.post("DescribeKey", {"KeyId": key_id})
+    assert code == 200
+    assert content["KeyMetadata"]["KeyState"] == "PendingImport"
